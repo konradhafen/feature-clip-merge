@@ -5,6 +5,9 @@ def clipByFeature(inputdir, outputdir, rasterfiles, shapefile, fieldname, nodata
     """
     Clip multiple rasters by features in a shapefile. Creates a new directory for each feature and saves clipped rasters in the directory
 
+    Note:
+        All input rasters and shapefiles should have the same spatial reference
+
     Args:
         inputdir: directory where rasters to be clipped are located
         outputdir: directory where a new directory for each clipped raster will be created
