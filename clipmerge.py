@@ -20,10 +20,9 @@ def clipByFeature(inputdir, outputdir, rasterfiles, shapefile, fieldname, nodata
 
     """
     fieldValues, fids = getFieldValues(shapefile, fieldname)
-    print fieldValues
-    for value in fieldValues:
+    fieldValues_unique = list(set(fieldValues)) #get unique field values (otherwise the same operation may be done twice)
+    for value in fieldValues_unique:
         dirvalue = outputdir + "/" + str(value)
-        print value
         if not os.path.isdir(dirvalue):
             os.mkdir(dirvalue)
         for raster in rasterfiles:
@@ -33,10 +32,24 @@ def clipByFeature(inputdir, outputdir, rasterfiles, shapefile, fieldname, nodata
                                       fieldValue=value, field=fieldname)
 
 def clipRasterWithPolygon(rasterpath, polygonpath, outputpath, nodata=-9999, xres=None, yres=None, field=None, fieldValue=None):
+    """
+
+    Args:
+        rasterpath: raster to clip
+        polygonpath: shapefile containing features to clip with
+        outputpath: path of output clipped raster
+        nodata: nodata value (default: -9999)
+        xres: x resolution of output raster (default: None, resolution of input raster)
+        yres: y resolution of output raster (default: None, resolution of input raster)
+        field: name of shapefile field to select features and name directories
+        fieldValue: list of unique values for input field
+
+    Returns:
+
+    """
     if xres is None or yres is None: xres, yres = getXYResolution(rasterpath)
     if field is not None and fieldValue is not None: wexp = str(field) + " = \'" + str(fieldValue) + "\'"
     else: wexp = None
-    print "where expression", wexp
 
     warpOptions = gdal.WarpOptions(format='GTiff', cutlineDSName=polygonpath, cropToCutline=True, cutlineWhere=wexp, xRes=xres, yRes=abs(yres), dstNodata=nodata)
     gdal.WarpOptions()
@@ -105,9 +118,9 @@ def getXYResolution(rasterPath):
 
 #RUN HERE
 
-shapefile ="C:/temp/testclip/huc12.shp"
-indir = "C:/temp/testclip"
-outdir = "C:/temp/testclip/clips"
-rasternames = ["dem.tif"]
+shapefile ="C:/temp/testclip/huc12.shp" #shapefile with features to clip by
+indir = "C:/temp/testclip" #directory containing rasters to be clipped
+outdir = "C:/temp/testclip/clips" #directory to create ouputs
+rasternames = ["dem.tif"] #list of raster files in input directory to be clipped
 
 clipByFeature(indir, outdir, rasternames, shapefile, fieldname="HUC12")
