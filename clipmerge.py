@@ -150,5 +150,6 @@ gdalmerge = "C:/Program Files/GDAL/gdal_merge.py"
 
 #clipByFeature(indir, outdir, rasternames, shapefile, fieldname="HUC12")
 
-#If you get this error--> python: can't open file '\bin\gdal_merge.py': [Errno 2] No such file or directory, set 'gdalmerge' as path to
+#If you get this error (or similar) --> python: can't open file '\bin\gdal_merge.py': [Errno 2] No such file or directory
+#You need to change the python executable in the system registry (not the Path variable) that runs python files
 mergeRasters(rasternames, outdir, indir, gdalmerge)
