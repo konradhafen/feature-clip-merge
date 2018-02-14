@@ -1,4 +1,5 @@
 import os
+import sys
 from osgeo import gdal, ogr
 
 def clipByFeature(inputdir, outputdir, rasterfiles, shapefile, fieldname, nodata=-9999, xres=None, yres=None):
@@ -59,6 +60,11 @@ def clipRasterWithPolygon(rasterpath, polygonpath, outputpath, nodata=-9999, xre
     gdal.Warp(outputpath, rasterpath, options=warpOptions)
     return None
 
+def createDir(dirpath):
+    if not os.path.exists(dirpath):
+        os.mkdir(dirpath)
+    return None
+
 def getFieldValues(dataset, fieldName):
     """
     Get list of all values for shapefile field
@@ -82,6 +88,13 @@ def getFieldValues(dataset, fieldName):
         return values, fids
     else:
         return None
+
+def getFilesFromSubdirs(rootdir, filename):
+    files = []
+    for subdir in os.listdir(rootdir):
+        if os.path.exists(rootdir + "/" + subdir + "/" + filename):
+            files.append(rootdir + "/" + subdir + "/" + filename)
+    return files
 
 def getGeoTransform(rasterPath):
     """
@@ -119,11 +132,23 @@ def getXYResolution(rasterPath):
         return None
 
 
+def mergeRasters(datafiles, searchdir, outputdir, gdalmerge="gdal_merge.py", nodata = -9999):
+    createDir(outputdir)
+    for datafile in datafiles:
+        outpath = outputdir + "/" + datafile
+        files = " ".join(getFilesFromSubdirs(searchdir, datafile))
+        os.system('"'+gdalmerge+'"' + " -n " + str(nodata) + " -a_nodata " + str(nodata) + " -of GTiff -o " + outpath + " " + files)
+    return None
+
 #RUN HERE
 
 shapefile ="C:/temp/testclip/huc12.shp" #shapefile with features to clip by
 indir = "C:/temp/testclip" #directory containing rasters to be clipped
 outdir = "C:/temp/testclip/clips" #directory to create ouputs
 rasternames = ["dem.tif"] #list of raster files in input directory to be clipped
+gdalmerge = "C:/Program Files/GDAL/gdal_merge.py"
 
-clipByFeature(indir, outdir, rasternames, shapefile, fieldname="HUC12")
+#clipByFeature(indir, outdir, rasternames, shapefile, fieldname="HUC12")
+
+#If you get this error--> python: can't open file '\bin\gdal_merge.py': [Errno 2] No such file or directory, set 'gdalmerge' as path to
+mergeRasters(rasternames, outdir, indir, gdalmerge)
