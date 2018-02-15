@@ -61,6 +61,16 @@ def clipRasterWithPolygon(rasterpath, polygonpath, outputpath, nodata=-9999, xre
     return None
 
 def createDir(dirpath):
+    """
+    Create a directory
+
+    Args:
+        dirpath: path of directory to create
+
+    Returns:
+        None
+
+    """
     if not os.path.exists(dirpath):
         os.mkdir(dirpath)
     return None
@@ -90,6 +100,16 @@ def getFieldValues(dataset, fieldName):
         return None
 
 def getFilesFromSubdirs(rootdir, filename):
+    """
+    Get paths of a specified filename from subdirectories in a directory
+    Args:
+        rootdir: directory to search subdirectories for filename
+        filename: name of file with extension. e.g. 'dem.tif'
+
+    Returns:
+        List: full path to each occurrence of filename in the subdirs of rootdir
+
+    """
     files = []
     for subdir in os.listdir(rootdir):
         if os.path.exists(rootdir + "/" + subdir + "/" + filename):
@@ -133,6 +153,25 @@ def getXYResolution(rasterPath):
 
 
 def mergeRasters(datafiles, searchdir, outputdir, gdalmerge="gdal_merge.py", nodata = -9999):
+    """
+    Combine multiple raster datasets into a single file with gdal_merge.py
+
+    Note:
+        If you get an error similar to: can't open file '\bin\gdal_merge.py': [Errno 2] No such file or directory.
+        You will need to change the default python executable for opening .py files to an executable that has access to
+        gdal_merge.py.
+
+    Args:
+        datafiles: list of datafiles to be merged e.g. ['dem.tif', 'fdir.tif', 'file2.tif']
+        searchdir: directory containing subdirectories that contain datafiles
+        outputdir: directory to write outputs
+        gdalmerge: path to gdal_merge.py (default: gdal_merge.py)
+        nodata: no data value (default: -9999)
+
+    Returns:
+        None
+
+    """
     createDir(outputdir)
     for datafile in datafiles:
         outpath = outputdir + "/" + datafile
